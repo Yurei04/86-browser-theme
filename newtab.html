@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Tab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="newtab.css" />
+</head>
+<body>
+
+  <!-- Image background -->
+  <div id="bgImage">
+    <img src="icons/1381179.png" alt=""/>
+  </div>
+  <div id="bgOverlay" class="has-image"></div>
+
+  <!-- Scan line overlay -->
+  <div id="scanlines"></div>
+
+  <!-- HUD grid canvas -->
+  <canvas id="grid"></canvas>
+
+  <!-- Corner HUD brackets -->
+  <div class="hud-corner hud-tl">
+    <span class="bracket-h"></span><span class="bracket-v"></span>
+    <div class="corner-data">
+      <span class="label">SYS</span>
+      <span class="val blink-dot">●</span>
+      <span class="val" id="sysStatus">ONLINE</span>
+    </div>
+  </div>
+  <div class="hud-corner hud-tr">
+    <span class="bracket-h"></span><span class="bracket-v"></span>
+    <div class="corner-data right">
+      <span class="val" id="cornerTime">--:--:--</span>
+      <span class="label">UTC+8</span>
+    </div>
+  </div>
+  <div class="hud-corner hud-bl">
+    <span class="bracket-h"></span><span class="bracket-v"></span>
+    <div class="corner-data">
+      <span class="label">UNIT</span>
+      <span class="val">SPEARHD-01</span>
+    </div>
+  </div>
+  <div class="hud-corner hud-br">
+    <span class="bracket-h"></span><span class="bracket-v"></span>
+    <div class="corner-data right">
+      <span class="label">SECTOR</span>
+      <span class="val">E-FRONT//VII</span>
+    </div>
+  </div>
+
+  <!-- Horizontal rule strips -->
+  <div class="hstrip hstrip-top">
+    <div class="hs-inner">
+      <span>RÉPUBLIQUE DE SAN MAGNOLIA</span>
+      <span class="divider">◆</span>
+      <span>EASTERN FRONT COMMAND</span>
+      <span class="divider">◆</span>
+      <span id="stripDate">——</span>
+    </div>
+  </div>
+  <div class="hstrip hstrip-bot">
+    <div class="hs-inner">
+      <span class="label">NETWORK</span>
+      <span class="val">SECURED</span>
+      <span class="divider">|</span>
+      <span class="label">SIGNAL</span>
+      <span class="val blink-dot">●</span>
+      <span class="val">NOMINAL</span>
+      <span class="divider">|</span>
+      <span class="label">PROC</span>
+      <span class="val" id="cpuVal">——</span>
+      <span class="divider">|</span>
+      <button class="footer-tip-btn" id="footerTipBtn">FOOTER ?</button>
+    </div>
+  </div>
+
+  <!-- Main UI -->
+  <div id="app">
+    <div id="center">
+
+      <!-- Clock block -->
+      <div id="clockBlock">
+        <div class="clock-frame">
+          <div class="clock-label">LOCAL TIME // REPUBLIC STANDARD</div>
+          <div id="clock">00:00</div>
+          <div class="clock-sub">
+            <span class="clock-sec-label">SEC</span>
+            <span id="clockSec">00</span>
+            <span class="sep">|</span>
+            <span id="dateStr">——</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="rule-divider">
+        <span class="rd-line"></span>
+        <span class="rd-diamond">◆</span>
+        <span class="rd-line"></span>
+      </div>
+
+      <!-- Google search -->
+      <div id="searchWrap">
+        <div class="search-label">
+          <span class="label">SEARCH INTERFACE</span>
+          <span class="divider">//</span>
+          <span class="val">GOOGLE NETWORK</span>
+        </div>
+        <form id="searchForm" action="https://www.google.com/search" method="GET" target="_self">
+          <div id="searchBox">
+            <div class="search-corner sc-tl"></div>
+            <div class="search-corner sc-tr"></div>
+            <div class="search-corner sc-bl"></div>
+            <div class="search-corner sc-br"></div>
+            <svg class="searchIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input type="text" name="q" id="searchInput" placeholder="ENTER QUERY..." autocomplete="off" spellcheck="false"/>
+            <button type="submit" aria-label="Search">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Shortcuts bar -->
+      <div id="shortcutsWrap">
+        <div class="shortcuts-header">
+          <span class="label">QUICK ACCESS</span>
+          <span class="divider">//</span>
+          <span class="val" id="shortcutCount">0 / 7</span>
+        </div>
+        <div id="shortcutsList">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Add shortcut modal -->
+  <div id="scModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-title">ADD SHORTCUT</div>
+      <div class="modal-field">
+        <label class="modal-label" for="scUrl">URL</label>
+        <input type="url" id="scUrl" class="modal-input" placeholder="https://example.com" autocomplete="off" spellcheck="false"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="scName">LABEL</label>
+        <input type="text" id="scName" class="modal-input" placeholder="SITE NAME" autocomplete="off" spellcheck="false" maxlength="10"/>
+      </div>
+      <div class="modal-actions">
+        <button id="scCancel" class="modal-btn modal-btn-cancel">CANCEL</button>
+        <button id="scConfirm" class="modal-btn modal-btn-confirm">ADD</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer tip modal -->
+  <div id="footerModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-title">REMOVE CHROME FOOTER</div>
+      <div class="modal-tip-body">
+        <div class="tip-step">
+          <span class="tip-num">01</span>
+          <span class="tip-text">Open a new tab → click the <strong>Customize Chrome</strong> button (bottom-right pencil icon).</span>
+        </div>
+        <div class="tip-step">
+          <span class="tip-num">02</span>
+          <span class="tip-text">In the side panel, go to <strong>Shortcuts</strong> and toggle <strong>Hide shortcuts</strong> — this clears the footer row.</span>
+        </div>
+        <div class="tip-step">
+          <span class="tip-num">03</span>
+          <span class="tip-text">Alternatively, navigate to <strong>chrome://flags</strong>, search <strong>"NTP Footer"</strong>, and set it to <strong>Disabled</strong>, then relaunch.</span>
+        </div>
+        <div class="tip-step">
+          <span class="tip-num">04</span>
+          <span class="tip-text">If using a custom new-tab extension, ensure it has permission to <strong>override the new tab page</strong> completely in chrome://extensions.</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="footerClose" class="modal-btn modal-btn-confirm">ACKNOWLEDGED</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="newtab.js"></script>
+</body>
+</html>
